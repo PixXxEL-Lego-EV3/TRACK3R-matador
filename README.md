@@ -11,4 +11,4 @@
 | Matheus Toscano de Oliveira | @teustoscano     |
 | Anderson Chaves Silva       | @anderson.chaves |
 | André Lucas F. L. de Souza  | @andrelucasf     |
-|                             |                  |
+| Igor Guimarães Veludo       | @igorveludo      |
