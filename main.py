@@ -14,6 +14,7 @@ CHANNEL_OPPONENT = 1
 shooter = MediumMotor(OUTPUT_A)
 sensor = InfraredSensor(INPUT_4)
 tank_drive = MoveSteering(OUTPUT_C, OUTPUT_B)
+prox = InfraredSensor(INPUT_4)
 
 # Add logging
 logging.basicConfig(level=logging.DEBUG, format="%(lineno)s: %(message)s")
@@ -60,7 +61,7 @@ def corno_ahead():
 # Code
 def main():
     log.info("Starting MATADOR")
-
+    prox.mode = 'IR-PROX'
     # while True:
     #     spin_matador()
     #     corno_ahead()
@@ -68,11 +69,19 @@ def main():
     # testar
     while True:
         if corno_ahead():
-            stop_spinning():
-            shoot_ball_forever():
-        else
-            stop_shooting():
-            spin_matador_forever():
+            shoot_ball_forever()
+        else:
+            tank_drive.on_for_seconds(0, SpeedPercent(50), 3)
+            # tank_drive.on_for_rotations(0, SpeedPercent(75), 10)
+            distance = prox.value()
+            
+            # if (distance <= 70):
+            
+            tank_drive.on_for_rotations(-25, SpeedPercent(75), 3)
+            tank_drive.on_for_seconds(0, SpeedPercent(50), 2)
+            spin_matador_forever()
+
+                
     
     log.info("Finishing MATADOR")
 
