@@ -26,14 +26,13 @@ def shoot_ball():
 # testar
 def shoot_ball_forever():
     shooter.on(SpeedPercent(100))
-    # ou
-    # shooter.run_forever()
 
-# testar
+# Para de atirar
 def stop_shooting():
     log.info("Stop shooting")
     shooter.stop()
 
+# Roda n vezes
 def spin_matador(turns):
     log.info("Spinning robot")
     tank_drive.on_for_rotations(-100, SpeedPercent(80), turns)
@@ -45,6 +44,7 @@ def spin_matador_forever():
 
 # testar
 def stop_spinning():
+    log.info("Stop spinning")
     tank_drive.off()
 
 def corno_ahead():
@@ -52,7 +52,7 @@ def corno_ahead():
     dist = sensor.distance(CHANNEL_OPPONENT)
 
     if (dist is not None and dist < 50):
-        if (head is not None and head > -5 and head < 5):
+        if (head is not None and head > -3 and head < 3):
             return True
     
     return False
