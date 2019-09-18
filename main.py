@@ -68,11 +68,11 @@ def main():
     # testar
     while True:
         if corno_ahead():
-            stop_spinning():
-            shoot_ball_forever():
-        else
-            stop_shooting():
-            spin_matador_forever():
+            stop_spinning()
+            shoot_ball_forever()
+        else:
+            stop_shooting()
+            spin_matador_forever()
     
     log.info("Finishing MATADOR")
 
