@@ -31,21 +31,21 @@ def shoot_ball_forever():
 
 # testar
 def stop_shooting():
+    log.info("Stop shooting")
     shooter.stop()
 
-def spin_matador():
-    tank_drive.on_for_rotations(-100, SpeedPercent(80), 1)
+def spin_matador(turns):
+    log.info("Spinning robot")
+    tank_drive.on_for_rotations(-100, SpeedPercent(80), turns)
 
 # testar
 def spin_matador_forever():
+    log.info("Spinning robot forever")
     tank_drive.on(-100, SpeedPercent(80))
 
 # testar
 def stop_spinning():
     tank_drive.off()
-    # ou
-    # tank = MotorSet(?)
-    # tank.off()
 
 def corno_ahead():
     head = sensor.heading(CHANNEL_OPPONENT)
