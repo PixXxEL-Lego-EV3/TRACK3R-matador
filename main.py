@@ -80,12 +80,33 @@ print("Starting MATADOR")
 while not btn.any():
     sleep(0.01)
 
-run_matador_seconds(7*2)
+cont = 0
+while(cont < 14):
+    if not corno_ahead():
+        run_matador_seconds(1)
+        if corno_ahead():
+            shoot_ball()
+    else:
+        shoot_ball()
+    cont += cont + 1
+    
+# run_matador_seconds(7*2)
 spin_matador_degrees(300)
-run_matador_seconds(5)
+
+cont = 0
+while(cont < 5):
+    if not corno_ahead():
+        run_matador_seconds(1)
+        if corno_ahead():
+            shoot_ball()
+    else:
+        shoot_ball()
+    cont += cont + 1
+
+# run_matador_seconds(5)
 
 while True:
-    print("Distancia: " + str(sensor.value(CHANNEL_OPPONENT)))
+    log.info("Distancia: " + str(sensor.value(CHANNEL_OPPONENT)))
 
     if corno_ahead():
         stop_spinning()
