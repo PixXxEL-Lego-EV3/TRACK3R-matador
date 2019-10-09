@@ -3,17 +3,23 @@
 import sys
 import logging
 
+from time import sleep
 from ev3dev2.motor import OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, LargeMotor, MediumMotor, MoveTank, SpeedPercent, MoveSteering
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import InfraredSensor
 from ev3dev2.led import Leds
 from ev3dev2.sound import Sound
+from ev3dev2.button import Button
 
 CHANNEL_OPPONENT = 1
 
+canRun = False
+
 shooter = MediumMotor(OUTPUT_A)
 sensor = InfraredSensor(INPUT_4)
+sensor.mode = "IR-SEEK"
 tank_drive = MoveSteering(OUTPUT_C, OUTPUT_B)
+btn = Button()
 
 # Add logging
 logging.basicConfig(level=logging.DEBUG, format="%(lineno)s: %(message)s")
@@ -37,15 +43,26 @@ def spin_matador(turns):
     log.info("Spinning robot")
     tank_drive.on_for_rotations(-100, SpeedPercent(80), turns)
 
-# testar
+
+def run_matador_seconds(seconds):
+    tank_drive.on_for_seconds(0, SpeedPercent(50), seconds)
+
+
+def spin_matador_degrees(degrees):
+    tank_drive.on_for_degrees(-100, SpeedPercent(60), degrees)
+
+
 def spin_matador_forever():
     log.info("Spinning robot forever")
-    tank_drive.on(-100, SpeedPercent(80))
+    tank_drive.on(-100, SpeedPercent(60))
 
 # testar
+
+
 def stop_spinning():
     log.info("Stop spinning")
     tank_drive.off()
+
 
 def corno_ahead():
     head = sensor.heading(CHANNEL_OPPONENT)
@@ -54,30 +71,30 @@ def corno_ahead():
     if (dist is not None and dist < 50):
         if (head is not None and head > -3 and head < 3):
             return True
-    
+
     return False
 
 # Code
-def main():
-    log.info("Starting MATADOR")
+print("Starting MATADOR")
 
-    # while True:
-    #     spin_matador()
-    #     corno_ahead()
+while not btn.any():
+    sleep(0.01)
 
-    # testar
-    while True:
-        if corno_ahead():
-            stop_spinning()
-            shoot_ball_forever()
-        else:
-            stop_shooting()
-            spin_matador_forever()
-    
-    log.info("Finishing MATADOR")
+run_matador_seconds(7*2)
+spin_matador_degrees(300)
+run_matador_seconds(5)
 
-if __name__ == '__main__':
-    main()
+while True:
+    print("Distancia: " + str(sensor.value(CHANNEL_OPPONENT)))
+
+    if corno_ahead():
+        stop_spinning()
+        shoot_ball()
+    else:
+        stop_shooting()
+        spin_matador_forever()
+
+log.info("Finishing MATADOR")
 
 # Utilidades
 # shooter.reset()
