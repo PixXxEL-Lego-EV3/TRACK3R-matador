@@ -1,84 +1,37 @@
 #!/usr/bin/env python3
-
-import sys
 import logging
+import os
 
-from ev3dev2.motor import OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, LargeMotor, MediumMotor, MoveTank, SpeedPercent, MoveSteering
-from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import InfraredSensor
+from ev3dev2.sensor import INPUT_4
+from ev3dev2.button import Button
 from ev3dev2.led import Leds
-from ev3dev2.sound import Sound
-
-CHANNEL_OPPONENT = 1
-
-shooter = MediumMotor(OUTPUT_A)
-sensor = InfraredSensor(INPUT_4)
-tank_drive = MoveSteering(OUTPUT_C, OUTPUT_B)
+from time import sleep
 
 # Add logging
+os.system('setfont Lat15-TerminusBold14')
 logging.basicConfig(level=logging.DEBUG, format="%(lineno)s: %(message)s")
 log = logging.getLogger(__name__)
 
-# Functions
-def shoot_ball():
-    shooter.on_for_rotations(SpeedPercent(100), 3)
-
-# testar
-def shoot_ball_forever():
-    shooter.on(SpeedPercent(100))
-
-# Para de atirar
-def stop_shooting():
-    log.info("Stop shooting")
-    shooter.stop()
-
-# Roda n vezes
-def spin_matador(turns):
-    log.info("Spinning robot")
-    tank_drive.on_for_rotations(-100, SpeedPercent(80), turns)
-
-# testar
-def spin_matador_forever():
-    log.info("Spinning robot forever")
-    tank_drive.on(-100, SpeedPercent(80))
-
-# testar
-def stop_spinning():
-    log.info("Stop spinning")
-    tank_drive.off()
-
-def corno_ahead():
-    head = sensor.heading(CHANNEL_OPPONENT)
-    dist = sensor.distance(CHANNEL_OPPONENT)
-
-    if (dist is not None and dist < 50):
-        if (head is not None and head > -3 and head < 3):
-            return True
-    
-    return False
+# Connect ultrasonic and touch sensors to any sensor port
+ir = InfraredSensor(INPUT_4)
+btn = Button()
+leds = Leds()
 
 # Code
-def main():
-    log.info("Starting MATADOR")
+print("Starting MATADOR")
 
-    # while True:
-    #     spin_matador()
-    #     corno_ahead()
+leds.all_off() # stop the LEDs flashing (as well as turn them off)
 
-    # testar
-    while True:
-        if corno_ahead():
-            stop_spinning()
-            shoot_ball_forever()
-        else:
-            stop_shooting()
-            spin_matador_forever()
-    
-    log.info("Finishing MATADOR")
+while not btn.any():
+    print("Distance:" + str(ir.proximity*1.4) + "cm") # to print distance
+    if ir.proximity < 40*1.4: # to detect objects closer than 40cm
+        # In the above line you can also use inches: us.distance_inches < 16
+        leds.set_color('LEFT',  'RED')
+        leds.set_color('RIGHT', 'RED')
+    else:
+        leds.set_color('LEFT',  'GREEN')
+        leds.set_color('RIGHT', 'GREEN')
+    sleep (0.01) # Give the CPU a rest
 
-if __name__ == '__main__':
-    main()
-
-# Utilidades
-# shooter.reset()
-# log.info("Heading: " + head) # testar
+log.info("Finishing MATADOR")
