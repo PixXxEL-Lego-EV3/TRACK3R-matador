@@ -11,7 +11,7 @@ from ev3dev2.led import Leds
 from ev3dev2.sound import Sound
 from ev3dev2.button import Button
 
-CHANNEL_OPPONENT = 1
+CHANNEL_OPPONENT = 2
 
 canRun = False
 
@@ -48,9 +48,11 @@ def run_matador_seconds(seconds):
     tank_drive.on_for_seconds(0, SpeedPercent(50), seconds)
 
 
-def spin_matador_degrees(degrees):
+def spin_matador_degrees_right(degrees):
     tank_drive.on_for_degrees(-100, SpeedPercent(60), degrees)
 
+def spin_matador_degrees_left(degrees):
+    tank_drive.on_for_degrees(100, SpeedPercent(60), degrees)
 
 def spin_matador_forever():
     log.info("Spinning robot forever")
@@ -68,7 +70,7 @@ def corno_ahead():
     head = sensor.heading(CHANNEL_OPPONENT)
     dist = sensor.distance(CHANNEL_OPPONENT)
 
-    if (dist is not None and dist < 50):
+    if (dist is not None and dist < 70):
         if (head is not None and head > -3 and head < 3):
             return True
 
@@ -81,7 +83,7 @@ while not btn.any():
     sleep(0.01)
 
 cont = 0
-while(cont < 14):
+while(cont < 8):
     if not corno_ahead():
         run_matador_seconds(1)
         if corno_ahead():
@@ -91,7 +93,7 @@ while(cont < 14):
     cont += cont + 1
     
 # run_matador_seconds(7*2)
-spin_matador_degrees(300)
+spin_matador_degrees_left(300)
 
 cont = 0
 while(cont < 5):
