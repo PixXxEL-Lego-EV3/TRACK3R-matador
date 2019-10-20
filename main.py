@@ -1,77 +1,124 @@
 #!/usr/bin/env python3
-'''Hello to the world from ev3dev.org'''
 
-import os
 import sys
-import time
-from ev3dev2.motor import LargeMotor, OUTPUT_C, OUTPUT_B, SpeedPercent, MoveTank
-from ev3dev2.sensor import INPUT_1
-from ev3dev2.sensor.lego import TouchSensor
+import logging
+
+from time import sleep
+from ev3dev2.motor import OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, LargeMotor, MediumMotor, MoveTank, SpeedPercent, MoveSteering
+from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
+from ev3dev2.sensor.lego import InfraredSensor
 from ev3dev2.led import Leds
 from ev3dev2.sound import Sound
+from ev3dev2.button import Button
 
-# state constants
-ON = True
-OFF = False
+CHANNEL_OPPONENT = 2
+
+canRun = False
+
+shooter = MediumMotor(OUTPUT_A)
+sensor = InfraredSensor(INPUT_4)
+sensor.mode = "IR-SEEK"
+tank_drive = MoveSteering(OUTPUT_C, OUTPUT_B)
+btn = Button()
+
+# Add logging
+logging.basicConfig(level=logging.DEBUG, format="%(lineno)s: %(message)s")
+log = logging.getLogger(__name__)
+
+# Functions
+def shoot_ball():
+    shooter.on_for_rotations(SpeedPercent(100), 3)
+
+# testar
+def shoot_ball_forever():
+    shooter.on(SpeedPercent(100))
+
+# Para de atirar
+def stop_shooting():
+    log.info("Stop shooting")
+    shooter.stop()
+
+# Roda n vezes
+def spin_matador(turns):
+    log.info("Spinning robot")
+    tank_drive.on_for_rotations(-100, SpeedPercent(80), turns)
 
 
-def debug_print(*args, **kwargs):
-    '''Print debug messages to stderr.
-    This shows up in the output panel in VS Code.
-    '''
-    print(*args, **kwargs, file=sys.stderr)
+def run_matador_seconds(seconds):
+    tank_drive.on_for_seconds(0, SpeedPercent(50), seconds)
 
 
-def reset_console():
-    '''Resets the console to the default state'''
-    print('\x1Bc', end='')
+def spin_matador_degrees_right(degrees):
+    tank_drive.on_for_degrees(-100, SpeedPercent(60), degrees)
+
+def spin_matador_degrees_left(degrees):
+    tank_drive.on_for_degrees(100, SpeedPercent(60), degrees)
+
+def spin_matador_forever():
+    log.info("Spinning robot forever")
+    tank_drive.on(-100, SpeedPercent(60))
+
+# testar
 
 
-def set_cursor(state):
-    '''Turn the cursor on or off'''
-    if state:
-        print('\x1B[?25h', end='')
+def stop_spinning():
+    log.info("Stop spinning")
+    tank_drive.off()
+
+
+def corno_ahead():
+    head = sensor.heading(CHANNEL_OPPONENT)
+    dist = sensor.distance(CHANNEL_OPPONENT)
+
+    if (dist is not None and dist < 70):
+        if (head is not None and head > -3 and head < 3):
+            return True
+
+    return False
+
+# Code
+print("Starting MATADOR")
+
+while not btn.any():
+    sleep(0.01)
+
+cont = 0
+while(cont < 8):
+    if not corno_ahead():
+        run_matador_seconds(1)
+        if corno_ahead():
+            shoot_ball()
     else:
-        print('\x1B[?25l', end='')
+        shoot_ball()
+    cont += cont + 1
+    
+# run_matador_seconds(7*2)
+spin_matador_degrees_left(300)
 
+cont = 0
+while(cont < 5):
+    if not corno_ahead():
+        run_matador_seconds(1)
+        if corno_ahead():
+            shoot_ball()
+    else:
+        shoot_ball()
+    cont += cont + 1
 
-def set_font(name):
-    '''Sets the console font
-    A full list of fonts can be found with `ls /usr/share/consolefonts`
-    '''
-    os.system('setfont ' + name)
+# run_matador_seconds(5)
 
+while True:
+    log.info("Distancia: " + str(sensor.value(CHANNEL_OPPONENT)))
 
-def main():
-    '''The main function of our program'''
-    # set the console just how we want it
-    reset_console()
-    set_cursor(OFF)
-    set_font('Lat15-Terminus24x12')
+    if corno_ahead():
+        stop_spinning()
+        shoot_ball()
+    else:
+        stop_shooting()
+        spin_matador_forever()
 
-    # print something to the screen of the device
-    print('PixXxeL matadar de robo lixo!')
-    sound = Sound()
-    sound.speak('EH HORA DO SHOOOOOOOOOULW... PORRA')
-    sound.speak('BIIIIIIIIRRRRLL')
+log.info("Finishing MATADOR")
 
-    # print something to the output panel in VS Code
-    debug_print('Debug Console Output')
-
-
-    tank_drive = MoveTank(OUTPUT_C, OUTPUT_B)
-
-    # drive in a turn for 5 rotations of the outer motor
-    # the first two parameters can be unit classes or percentages.
-    tank_drive.on_for_rotations(SpeedPercent(50), SpeedPercent(75), 10)
-
-    # drive in a different turn for 3 seconds
-    tank_drive.on_for_seconds(SpeedPercent(60), SpeedPercent(30), 3)
-
-
-    # wait a bit so you have time to look at the display before the program
-    # exits
-    time.sleep(5)
-
-if __name__ == '__main__':
-    main()
+# Utilidades
+# shooter.reset()
+# log.info("Heading: " + head) # testar
