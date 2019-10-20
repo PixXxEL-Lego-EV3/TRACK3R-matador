@@ -56,7 +56,7 @@ def spin_matador_degrees_left(degrees):
 
 def spin_matador_forever():
     log.info("Spinning robot forever")
-    tank_drive.on(-100, SpeedPercent(60))
+    tank_drive.on(100, SpeedPercent(50))
 
 # testar
 
@@ -83,7 +83,7 @@ while not btn.any():
     sleep(0.01)
 
 cont = 0
-while(cont < 8):
+while(cont < 12):
     if not corno_ahead():
         run_matador_seconds(1)
         if corno_ahead():
@@ -96,7 +96,7 @@ while(cont < 8):
 spin_matador_degrees_left(300)
 
 cont = 0
-while(cont < 5):
+while(cont < 9):
     if not corno_ahead():
         run_matador_seconds(1)
         if corno_ahead():
