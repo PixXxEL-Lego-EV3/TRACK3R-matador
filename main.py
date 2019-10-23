@@ -98,7 +98,7 @@ engata_re(11)
 spin_matador_degrees_left(650)
 
 cont = 0
-while (cont < 6):
+while (cont < 9):
     if not corno_ahead():
         run_matador_seconds(1)
         if corno_ahead():
