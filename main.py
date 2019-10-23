@@ -25,18 +25,22 @@ btn = Button()
 logging.basicConfig(level=logging.DEBUG, format="%(lineno)s: %(message)s")
 log = logging.getLogger(__name__)
 
+
 # Functions
 def shoot_ball():
     shooter.on_for_rotations(SpeedPercent(100), 3)
+
 
 # testar
 def shoot_ball_forever():
     shooter.on(SpeedPercent(100))
 
+
 # Para de atirar
 def stop_shooting():
     log.info("Stop shooting")
     shooter.stop()
+
 
 # Roda n vezes
 def spin_matador(turns):
@@ -51,12 +55,15 @@ def run_matador_seconds(seconds):
 def spin_matador_degrees_right(degrees):
     tank_drive.on_for_degrees(-100, SpeedPercent(60), degrees)
 
+
 def spin_matador_degrees_left(degrees):
     tank_drive.on_for_degrees(100, SpeedPercent(60), degrees)
+
 
 def spin_matador_forever():
     log.info("Spinning robot forever")
     tank_drive.on(100, SpeedPercent(50))
+
 
 # testar
 
@@ -70,11 +77,12 @@ def corno_ahead():
     head = sensor.heading(CHANNEL_OPPONENT)
     dist = sensor.distance(CHANNEL_OPPONENT)
 
-    if (dist is not None and dist < 70):
+    if (dist is not None and dist < 75):
         if (head is not None and head > -3 and head < 3):
             return True
 
     return False
+
 
 # Code
 print("Starting MATADOR")
@@ -83,7 +91,7 @@ while not btn.any():
     sleep(0.01)
 
 cont = 0
-while(cont < 12):
+while (cont < 15):
     if not corno_ahead():
         run_matador_seconds(1)
         if corno_ahead():
@@ -91,12 +99,24 @@ while(cont < 12):
     else:
         shoot_ball()
     cont += cont + 1
-    
+
 # run_matador_seconds(7*2)
 spin_matador_degrees_left(300)
 
 cont = 0
-while(cont < 9):
+while (cont < 9):
+    if not corno_ahead():
+        run_matador_seconds(1)
+        if corno_ahead():
+            shoot_ball()
+    else:
+        shoot_ball()
+    cont += cont + 1
+
+spin_matador_degrees_left(200)
+
+cont = 0
+while (cont < 9):
     if not corno_ahead():
         run_matador_seconds(1)
         if corno_ahead():
