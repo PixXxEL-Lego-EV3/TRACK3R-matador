@@ -81,7 +81,7 @@ def corno_ahead():
     head = sensor.heading(CHANNEL_OPPONENT)
     dist = sensor.distance(CHANNEL_OPPONENT)
 
-    if (dist is not None and dist < 70):
+    if (dist is not None and dist < 80):
         if (head is not None and head > -3 and head < 3):
             return True
 
